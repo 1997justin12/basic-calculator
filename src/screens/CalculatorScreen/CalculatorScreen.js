@@ -6,28 +6,92 @@ import CalculatorButtons from '../../components/CalculatorButtons';
 const reducer = (state, action) => {
     let { currentInput, currentValue } = state;
     const operands = ['+', '-', 'x', '/'];
-    let numbers = [];
-    let operations = [];
 
-    var stringNumber = '';
+    const computed = (isgetResult = false) => {
+        var numbers = currentInput.split(/[x+-\/]+/);
+            numbers = numbers.filter((value) => {
+                return value != "";
+            });
+        var operand = currentInput.split(/[0-9]+/);
+            operand = operand.filter((value) => {
+                return value != "";
+            });
+            console.log(numbers, operand);
+            console.log(operand.length, numbers.length);
 
-    const computed = () => {
-        console.log({currentInput});
-        for(let x = 0 ; x < currentInput.length; x++){
-            if(operands.indexOf(currentInput[x]) > -1 ){
-                operations.push(currentInput[x]);
-                numbers.push(stringNumber);
-                stringNumber = '';
-            }else{
-                stringNumber += currentInput[x];
-                if(x === currentInput.length - 1){
-                    numbers.push(stringNumber);
-                    stringNumber = '';
+            if(operand.length >= numbers.length || operand.length === 0 || numbers.length < 3 && isgetResult === false){
+                return;
+            }
+            
+        while(true){
+            if(operand.indexOf("x") > -1){
+                var index = operand.indexOf("x");
+                var solve = numbers[index] * numbers[index+1];
+                    numbers.splice(index, 1, "");
+                numbers.splice(index+1, 1, solve);
+                operand.splice(index, 1, "");
+
+                if(operand.indexOf("x") === -1){
+                    numbers = numbers.filter((value) => {
+                        return value != "";
+                    });
+                    operand = operand.filter((value) => {
+                        return value != "";
+                    });
                 }
+            }else if(operand.indexOf("x") == -1 && operand.indexOf("/") > -1){
+                var index = operand.indexOf("/");
+                var solve = numbers[index] / numbers[index+1];
+                
+                numbers.splice(index, 1, "");
+                numbers.splice(index+1, 1, solve);
+                operand.splice(index, 1, "");
+                
+                if(operand.indexOf("/") === -1){
+                    numbers = numbers.filter((value) => {
+                        return value != "";
+                    });
+                    operand = operand.filter((value) => {
+                        return value != "";
+                    });
+                }
+            }else if(operand.indexOf("/") == -1 && operand.indexOf("+") > -1){
+                var index = operand.indexOf("+");
+                var solve = parseInt(numbers[index]) + parseInt(numbers[index+1]);
+                
+                numbers.splice(index, 1, "");
+                numbers.splice(index+1, 1, solve);
+                operand.splice(index, 1, "");
+                
+                if(operand.indexOf("+") === -1){
+                    numbers = numbers.filter((value) => {
+                        return value != "";
+                    });
+                    operand = operand.filter((value) => {
+                        return value != "";
+                    });
+                }
+            }else if(operand.indexOf("+") == -1 && operand.indexOf("-") > -1){
+                var index = operand.indexOf("-");
+                var solve = numbers[index] - numbers[index+1];
+                
+                numbers.splice(index, 1, "");
+                numbers.splice(index+1, 1, solve);
+                operand.splice(index, 1, "");
+                
+                if(operand.indexOf("-") === -1){
+                    numbers = numbers.filter((value) => {
+                        return value != "";
+                    });
+                    operand = operand.filter((value) => {
+                        return value != "";
+                    });
+                }
+            }else{
+                break;
             }
         }
-
-        console.log({numbers, operations});
+        currentValue = numbers[0];
     }
 
     switch(action.type){
@@ -36,10 +100,9 @@ const reducer = (state, action) => {
                     currentInput = '';
 
             currentInput += action.payload;  
-            console.log({currentInput});
             computed();         
 
-            return {...state, currentInput: currentInput };
+            return {...state, currentInput: currentInput, currentValue: currentValue };
         case 'typingOperands':
             if( operands.indexOf(currentInput[currentInput.length - 1]) > -1 ){
                 currentInput = currentInput.substring(0, currentInput.length - 1);
@@ -50,10 +113,11 @@ const reducer = (state, action) => {
             computed();
 
             return {...state, currentInput: currentInput, currentValue: currentValue};
-        
+        case 'getResult':
+            computed(true);
+            return {...state, currentInput: currentInput, currentValue: currentValue};
         default:
             return state;
-        
     }
 }
 
@@ -86,7 +150,7 @@ const CalculatorScreen = () => {
                 <CalculatorButtons enteredNumber={() => dispatch({type: 'typingNumbers', payload: 0})} value="0"/>
                 <CalculatorButtons value="."/>
                 <CalculatorButtons enteredNumber={() => dispatch({type: 'typingOperands', payload: '/'})} value="/"/>
-                <CalculatorButtons value="="/>
+                <CalculatorButtons enteredNumber={() => dispatch({type: 'getResult', payload: true})} value="="/>
             </View>
         </>
     )
@@ -98,8 +162,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         marginHorizontal: 10,
         flexDirection: "row",
-        borderWidth: 1,
-        borderColor: 'pink'
     },
    
 })
