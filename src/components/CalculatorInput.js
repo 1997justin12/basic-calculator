@@ -6,8 +6,8 @@ import { black } from 'ansi-colors';
 const CalculatorInput = ({currentInput, currentValue}) => {
     return(
         <View style={styles.resultScreen}>
-            <Text style={styles.prevInput}>{currentValue}</Text>
-            <Text style={styles.currentInput}>{currentInput}</Text>
+            {currentValue ? <Text style={styles.prevInput}>Ans = {currentValue}</Text> : null }
+            {currentInput ? <Text style={styles.currentInput}>{currentInput}</Text> : null }
         </View>
     );
 }
@@ -15,20 +15,24 @@ const CalculatorInput = ({currentInput, currentValue}) => {
 const styles = StyleSheet.create({
     resultScreen: {
         margin: 10,
+        marginTop: 15,
+        marginBottom: 30,
         padding: 5,
-        height: 90,
-        borderColor: 'black',
+        height: 158,
+        borderColor: '#130A0A',
+        backgroundColor: '#191818',
         borderWidth: 1
     },
     prevInput: {
         textAlign: 'right',
         fontSize: 25,
-        color: 'red'
+        color: '#ffffff'
     },
     currentInput: {
         flex: 1,
         fontSize: 50,
-        textAlign: 'right'
+        textAlign: 'right',
+        color: '#ffffff'
     }
 });
 

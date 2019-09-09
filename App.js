@@ -7,7 +7,8 @@ const navigation = createStackNavigator({
 },{
   initialRouteName: 'Calculator',
   defaultNavigationOptions: {
-    title: 'Calculator'
+    title: 'Calculator',
+    header: null
   }
 })
 
